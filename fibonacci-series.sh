@@ -1,18 +1,14 @@
 #!/bin/bash
 
-# Function to generate Fibonacci series
 fibonacci() {
-    local n=$1 # Number of terms to generate
-    local a=0  # First Fibonacci number
-    local b=1  # Second Fibonacci number
+    local n=$1
+    local a=0
+    local b=1
 
-    # Input validation
-    if (( n < 1 )); then
+    if ! [[ "$n" =~ ^[0-9]+$ ]] || [ "$n" -le 0 ]; then
         echo "Please provide a positive integer for the number of terms."
-        return 1
+        exit 1
     fi
-
-    echo "Fibonacci Series up to $n terms:"
 
     # Handle the first two terms separately
     if (( n >= 1 )); then
@@ -32,7 +28,12 @@ fibonacci() {
 }
 
 # Main part of the script
-read -p "Enter the number of Fibonacci terms to generate: " num_terms
+num_terms=$1
 
-# Call the fibonacci function with user input
+if [ -z "$num_terms" ]; then
+    echo "Usage: $0 <number_of_terms>"
+    exit 1
+fi
+
 fibonacci "$num_terms"
+
