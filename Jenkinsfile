@@ -5,16 +5,16 @@ pipeline {
             steps {
                 echo 'Generating Fibonacci series for 10 terms...'
                 sh 'chmod +x fibonacci-series.sh'
-                sh './fibonacci-series.sh'
+                sh './fibonacci-series.sh 10'
             }
         }
     }
     post {
-        failure {
-            echo '❌ Fibonacci pipeline failed!'
-        }
         success {
             echo '✅ Fibonacci pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Fibonacci pipeline failed!'
         }
     }
 }
