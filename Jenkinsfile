@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Run Fibonacci Script Locally') {
             steps {
@@ -8,12 +9,14 @@ pipeline {
                 sh './fibonacci-series.sh 10'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image for Fibonacci script...'
                 sh '/usr/local/bin/docker build -t fibonacci-app:latest .'
             }
         }
+
         stage('Run Docker Container') {
             steps {
                 echo 'Running Docker container for 10 terms...'
@@ -21,6 +24,7 @@ pipeline {
             }
         }
     }
+
     post {
         success {
             echo '✅ Fibonacci pipeline completed successfully!'
@@ -30,4 +34,3 @@ pipeline {
         }
     }
 }
-
