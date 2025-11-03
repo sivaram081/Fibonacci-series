@@ -11,14 +11,13 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image for Fibonacci script...'
-                // Ensure Dockerfile exists in repo
-                sh 'docker build -t fibonacci-app:latest .'
+                sh '/usr/local/bin/docker build -t fibonacci-app:latest .'
             }
         }
         stage('Run Docker Container') {
             steps {
                 echo 'Running Docker container for 10 terms...'
-                sh 'docker run --rm fibonacci-app:latest 10'
+                sh '/usr/local/bin/docker run --rm fibonacci-app:latest 10'
             }
         }
     }
