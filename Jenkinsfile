@@ -1,36 +1,47 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Run Fibonacci Script Locally') {
+        stage('Setup Docker Desktop Context') {
             steps {
-                echo 'Running Fibonacci script on the host for 10 terms...'
-                sh 'chmod +x fibonacci-series.sh'
-                sh './fibonacci-series.sh 10'
+                sh '''
+                    # Switch to Docker Desktop context if available
+                    docker context use desktop-linux || true
+                    
+                    # Disable credential helpers for this session
+                    export DOCKER_BUILDKIT=0
+                '''
             }
         }
-
-        stage('Build Docker Image') {
+        
+        stage('Login with Desktop Credentials') {
             steps {
-                echo 'Building Docker image for Fibonacci script...'
-                sh '/usr/local/bin/docker build -t fibonacci-app:latest .'
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker-desktop-credentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh '''
+                            # Login without credential store interference
+                            docker login \
+                                --username "$DOCKER_USER" \
+                                --password "$DOCKER_PASS"
+                        '''
+                    }
+                }
             }
         }
-
-        stage('Run Docker Container') {
+        
+        stage('Build and Run') {
             steps {
-                echo 'Running Docker container for 10 terms...'
-                sh '/usr/local/bin/docker run --rm fibonacci-app:latest 10'
+                sh '''
+                    docker build -t fibonacci-app:latest .
+                    docker run --rm fibonacci-app:latest 10
+                '''
             }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Fibonacci pipeline completed successfully!'
-        }
-        failure {
-            echo '❌ Fibonacci pipeline failed!'
         }
     }
 }
+
+
